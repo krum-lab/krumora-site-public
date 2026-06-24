@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#030305" />
+<title>Demo grátis · Krumora</title>
+<meta name="description" content="Teste a IA vendedora da Krumora no seu WhatsApp por 15 minutos, em modo seguro — a IA só fala com nossos leads de teste." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;800&family=Handjet:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--rubro-krumora:#e11d3a;--rubro-profundo:#b8152c;--rubro-glow:rgba(225,29,58,.55);
+    --bg:#030305;--surface:#0b0b0f;--surface-2:#101017;--border:#1c1c26;--border-2:#2a2a37;
+    --accent:var(--rubro-profundo);--accent-hi:var(--rubro-krumora);
+    --text:#f2f2f7;--text-2:#9a9aab;--text-3:#5c5c6e;--maxw:980px}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.6;position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 60% 45% at 50% -5%,rgba(225,29,58,.20),transparent 60%)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;z-index:2}
+  a{color:inherit;text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(3,3,5,.8);border-bottom:1px solid var(--border)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo-img{width:42px;height:42px;object-fit:contain}
+  .brand-name{font-family:'Handjet',monospace;font-weight:800;font-size:22px;color:#fff}
+  .brand-name .k-neon{color:var(--rubro-krumora);text-shadow:0 0 8px var(--rubro-glow)}
+  .nav a.back{font-size:14px;color:var(--text-2);padding:8px 14px;border-radius:9px}
+  .nav a.back:hover{color:var(--text);background:var(--surface)}
+  .hero{text-align:center;padding:72px 0 50px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:999px;
+    background:rgba(225,29,58,.08);border:1px solid rgba(225,29,58,.28);font-size:12.5px;font-weight:600;
+    color:#ff9aa9;margin-bottom:26px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}
+  h1{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:18px}
+  h1 .neon{background:linear-gradient(180deg,#fff,#ffd0d7,var(--accent-hi));-webkit-background-clip:text;
+    background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-size:clamp(15px,2.2vw,19px);color:var(--text-2);max-width:600px;margin:0 auto 34px}
+  .btn-demo{display:inline-flex;align-items:center;gap:10px;padding:16px 34px;border-radius:13px;
+    font-weight:700;font-size:17px;color:#fff;
+    background:linear-gradient(135deg,var(--accent-hi),var(--accent));
+    box-shadow:0 10px 30px -8px var(--rubro-glow),inset 0 1px 0 rgba(255,255,255,.18);
+    transition:transform .2s,box-shadow .25s,filter .2s}
+  .btn-demo:hover{transform:translateY(-3px);box-shadow:0 16px 40px -8px var(--rubro-glow);filter:brightness(1.07)}
+  .micro{margin-top:14px;font-size:12.5px;color:var(--text-3)}
+  section.block{padding:54px 0}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--accent-hi);text-align:center;margin-bottom:12px;font-weight:600}
+  .h2{font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-1px;text-align:center;margin-bottom:40px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+  .step{position:relative;background:linear-gradient(165deg,var(--surface),#06060a);border:1px solid var(--border);
+    border-radius:16px;padding:26px 22px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .step:hover{transform:translateY(-5px);border-color:rgba(225,29,58,.45);box-shadow:0 24px 50px -22px var(--rubro-glow)}
+  .step::before{counter-increment:s;content:"0" counter(s);font-family:'JetBrains Mono',monospace;font-size:13px;
+    font-weight:800;color:var(--accent-hi);display:block;margin-bottom:12px}
+  .step h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  .step p{color:var(--text-2);font-size:14px}
+  .safe{max-width:680px;margin:8px auto 0;background:linear-gradient(160deg,rgba(34,197,94,.06),rgba(11,11,15,.5));
+    border:1px solid rgba(34,197,94,.28);border-radius:18px;padding:30px 28px;text-align:center}
+  .safe .lk{font-size:30px;margin-bottom:12px}
+  .safe h3{font-size:19px;font-weight:800;margin-bottom:10px}
+  .safe p{color:var(--text-2);font-size:14.5px;max-width:520px;margin:0 auto}
+  .safe .li{display:flex;gap:9px;align-items:flex-start;text-align:left;max-width:460px;margin:14px auto 0;
+    color:var(--text-2);font-size:13.5px}
+  .safe .li .ck{color:#22c55e;font-weight:800;flex-shrink:0}
+  .final{text-align:center;padding:64px 0 40px}
+  .final h2{font-size:clamp(26px,4.4vw,40px);font-weight:900;letter-spacing:-1px;margin-bottom:22px}
+  footer{border-top:1px solid var(--border);padding:34px 0;text-align:center;color:var(--text-3);font-size:12.5px;position:relative;z-index:2}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html">
+      <img class="logo-img" src="assets/logo.png" alt="Krumora">
+      <span class="brand-name"><span class="k-neon">K</span>rumora</span>
+    </a>
+    <a class="back" href="index.html">← Voltar</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> Demo ao vivo · 15 minutos grátis</div>
+    <h1>Veja a IA <span class="neon">vender por você</span><br>no seu próprio WhatsApp.</h1>
+    <p class="sub">Conecte seu WhatsApp e acompanhe, em tempo real, a Krumora atender um lead e
+      conduzir a venda — enquanto o funil enche sozinho na sua frente.</p>
+    <a class="btn-demo" id="cta" href="#">⚡ Quero meu demo grátis</a>
+    <p class="micro">Sem cartão · Sem instalar nada · A sessão expira sozinha em 15 min</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="kicker">Como funciona</div>
+    <h2 class="h2">3 passos, 15 minutos.</h2>
+    <div class="steps">
+      <div class="step"><h3>Conecte seu WhatsApp</h3>
+        <p>Você escaneia um QR Code rápido. Nada pra instalar — roda no seu número, igual ao WhatsApp Web.</p></div>
+      <div class="step"><h3>A IA atende um lead-teste</h3>
+        <p>A gente dispara um "cliente" de demonstração. Você vê a Krumora respondendo e vendendo, ao vivo.</p></div>
+      <div class="step"><h3>O Kanban enche na sua tela</h3>
+        <p>Acompanhe o lead andar de "Novo" a "Fechado" no painel, em tempo real. Sinta o produto funcionando.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="safe">
+      <div class="lk">🔒</div>
+      <h3>Modo seguro — seus contatos não são tocados</h3>
+      <p>Durante o demo, a IA responde <b>apenas aos nossos leads de teste</b> — ela <b>nunca</b> escreve
+        para seus contatos reais. Você está no controle o tempo todo.</p>
+      <div class="li"><span class="ck">✓</span> A IA só conversa com números de demonstração da Krumora</div>
+      <div class="li"><span class="ck">✓</span> A sessão expira automaticamente em 15 minutos</div>
+      <div class="li"><span class="ck">✓</span> Ao final, a conexão é encerrada e os dados do teste são apagados</div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Pronto pra ver acontecer?</h2>
+    <a class="btn-demo" id="cta2" href="#">⚡ Começar meu demo grátis</a>
+    <p class="micro">Você fala com a gente no WhatsApp e a Aurora libera seu demo na hora.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Krumora · A IA que vende enquanto você dorme.</div>
+</footer>
+
+<script>
+(function(){
+  var NUM = '554791549404';
+  var MSG = 'Oi! Quero fazer o demo grátis de 15 min da Krumora no meu WhatsApp.';
+  var link = 'https://wa.me/' + NUM + '?text=' + encodeURIComponent(MSG);
+  ['cta','cta2'].forEach(function(id){ var a=document.getElementById(id); if(a){a.href=link;a.target='_blank';a.rel='noopener';} });
+})();
+</script>
+</body>
+</html>

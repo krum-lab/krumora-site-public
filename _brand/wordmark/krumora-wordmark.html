@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Handjet:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--rubro-krumora:#e11d3a;--rubro-glow:rgba(225,29,58,.55)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%}
+  body{display:grid;place-items:center;background:transparent}
+  .wrap{padding:40px 56px}
+  .wordmark{font-family:'Handjet',monospace;font-weight:800;font-size:96px;letter-spacing:1px;
+    color:#fff;position:relative;line-height:1;white-space:nowrap;
+    animation:pxFlicker 4.5s infinite steps(1), neonPulse 2.6s ease-in-out infinite}
+  .wordmark .k-neon{color:var(--rubro-krumora);
+    text-shadow:0 0 16px var(--rubro-glow),0 0 30px rgba(225,29,58,.5)}
+  /* glitch RGB */
+  .wordmark::before,.wordmark::after{content:attr(data-text);position:absolute;left:0;top:0;
+    width:100%;overflow:hidden;clip-path:inset(0 0 0 0);pointer-events:none}
+  .wordmark::before{color:#e11d3a;text-shadow:0 0 8px rgba(225,29,58,.9);
+    animation:pxGlitchR 5s infinite steps(2)}
+  .wordmark::after{color:#19d3e8;text-shadow:0 0 8px rgba(25,211,232,.6);
+    animation:pxGlitchC 5s infinite steps(2)}
+  @keyframes pxFlicker{0%,92%,100%{opacity:1}94%{opacity:.6}96%{opacity:1}97%{opacity:.78}}
+  @keyframes neonPulse{
+    0%,100%{text-shadow:0 0 6px rgba(225,29,58,.5),0 0 12px rgba(225,29,58,.25)}
+    50%{text-shadow:0 0 10px rgba(225,29,58,.8),0 0 22px rgba(225,29,58,.45),0 0 34px rgba(225,29,58,.25)}}
+  @keyframes pxGlitchR{
+    0%,82%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+    83%{transform:translate(-2px,1px);clip-path:inset(0 0 55% 0);opacity:.9}
+    86%{transform:translate(2px,-1px);clip-path:inset(60% 0 0 0);opacity:.9}
+    89%{transform:translate(-1px,0);clip-path:inset(20% 0 40% 0);opacity:.9}
+    91%{transform:translate(0,0);opacity:0}}
+  @keyframes pxGlitchC{
+    0%,82%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+    83%{transform:translate(2px,-1px);clip-path:inset(0 0 60% 0);opacity:.7}
+    86%{transform:translate(-2px,1px);clip-path:inset(55% 0 0 0);opacity:.7}
+    89%{transform:translate(1px,0);clip-path:inset(30% 0 30% 0);opacity:.7}
+    91%{transform:translate(0,0);opacity:0}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="wordmark" data-text="Krumora"><span class="k-neon">K</span>rumora</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#030305" />
+<title>Página não encontrada · Krumora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@800&family=Handjet:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#030305;--accent:#b8152c;--accent-hi:#e11d3a;--text:#f2f2f7;--text-2:#9a9aab}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden;position:relative}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(225,29,58,.18),transparent 60%)}
+  .box{position:relative;z-index:1}
+  .logo{width:54px;height:54px;border-radius:14px;background:linear-gradient(160deg,#0c0c11,#050507);
+    border:1.5px solid var(--accent-hi);display:grid;place-items:center;margin:0 auto 26px;
+    box-shadow:0 0 20px rgba(225,29,58,.35)}
+  .logo span{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:26px;color:var(--accent-hi);
+    text-shadow:0 0 10px rgba(225,29,58,.8)}
+  .code{font-family:'Handjet',monospace;font-weight:800;font-size:104px;letter-spacing:2px;
+    background:linear-gradient(180deg,#fff,#ffd0d7,var(--accent-hi));-webkit-background-clip:text;
+    background-clip:text;-webkit-text-fill-color:transparent}
+  h1{font-size:22px;font-weight:800;margin:8px 0 10px}
+  p{color:var(--text-2);font-size:15px;margin-bottom:28px}
+  a{display:inline-flex;gap:8px;align-items:center;padding:13px 26px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent-hi),var(--accent));color:#fff;font-weight:600;
+    text-decoration:none;box-shadow:0 8px 26px -8px rgba(225,29,58,.55)}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo"><span>K</span></div>
+    <div class="code">404</div>
+    <h1>Página não encontrada</h1>
+    <p>Essa página foi vender em outro lugar. Vamos te levar de volta.</p>
+    <a href="/">← Voltar pra Krumora</a>
+  </div>
+</body>
+</html>

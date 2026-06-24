@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800&family=Pixelify+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1000px;height:1000px;overflow:hidden}
+  .canvas{position:relative;width:1000px;height:1000px;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(225,29,58,.30), transparent 55%),
+      radial-gradient(circle at 50% 50%, #0a0a10 0%, #050507 60%, #020203 100%);
+    display:grid;place-items:center;overflow:hidden}
+  /* sutil anel de glow ao redor (fica dentro do recorte circular) */
+  .ring{position:absolute;width:880px;height:880px;border-radius:50%;
+    border:2px solid rgba(225,29,58,.18);
+    box-shadow:inset 0 0 90px rgba(225,29,58,.16), 0 0 60px rgba(225,29,58,.10)}
+  .ring2{position:absolute;width:660px;height:660px;border-radius:50%;
+    border:1.5px solid rgba(225,29,58,.10)}
+  /* estrelinhas (temática espacial) */
+  .star{position:absolute;border-radius:50%;background:#fff;opacity:.5}
+  .rs{background:#ff5e72;box-shadow:0 0 6px #e11d3a}
+  .mark{position:relative;z-index:5;width:430px;height:430px;border-radius:96px;
+    background:linear-gradient(160deg,#0e0e14,#050507);
+    border:5px solid #e11d3a;display:grid;place-items:center;
+    box-shadow:0 0 70px rgba(225,29,58,.55), inset 0 0 50px rgba(225,29,58,.18),
+      0 30px 80px rgba(0,0,0,.6)}
+  .mark svg{width:64%;height:64%;overflow:visible;
+    filter:drop-shadow(0 0 16px rgba(225,29,58,.85)) drop-shadow(0 0 38px rgba(225,29,58,.4))}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="ring"></div>
+    <div class="ring2"></div>
+    <div class="star" style="width:6px;height:6px;left:230px;top:250px"></div>
+    <div class="star rs" style="width:7px;height:7px;left:760px;top:300px"></div>
+    <div class="star" style="width:4px;height:4px;left:300px;top:720px"></div>
+    <div class="star rs" style="width:5px;height:5px;left:700px;top:730px"></div>
+    <div class="star" style="width:5px;height:5px;left:180px;top:520px"></div>
+    <div class="star" style="width:4px;height:4px;left:820px;top:540px"></div>
+    <div class="star rs" style="width:6px;height:6px;left:500px;top:185px"></div>
+    <div class="star" style="width:4px;height:4px;left:520px;top:815px"></div>
+    <div class="mark">
+      <svg viewBox="0 0 200 200">
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <!-- glow externo do tubo -->
+          <g stroke="#b8152c" stroke-width="31" opacity=".5">
+            <path d="M64 40 V160"/><path d="M64 100 L138 44"/><path d="M64 100 L140 160"/>
+          </g>
+          <!-- tubo neon -->
+          <g stroke="#e11d3a" stroke-width="24">
+            <path d="M64 40 V160"/><path d="M64 100 L138 44"/><path d="M64 100 L140 160"/>
+          </g>
+          <!-- filamento (núcleo brilhante) -->
+          <g stroke="#ff9fab" stroke-width="7" opacity=".92">
+            <path d="M64 40 V160"/><path d="M64 100 L138 44"/><path d="M64 100 L140 160"/>
+          </g>
+        </g>
+        <!-- spark: a venda que fecha enquanto você dorme -->
+        <path d="M162 18 q3.5 13 17 17 q-13.5 4 -17 17 q-3.5 -13 -17 -17 q13.5 -4 17 -17 Z"
+              fill="#ffe6ea" stroke="#fff" stroke-width="1.5"/>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

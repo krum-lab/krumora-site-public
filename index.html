@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#030305" />
+<title>Krumora · A IA que vende enquanto você dorme</title>
+<meta name="description" content="Krumora é a IA vendedora de WhatsApp que qualifica, responde e fecha vendas 24h por dia — com um funil Kanban que mostra cada lead em tempo real. A IA que vende enquanto você dorme." />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Krumora · A IA que vende enquanto você dorme" />
+<meta property="og:description" content="A IA vendedora de WhatsApp que qualifica, responde e fecha vendas 24h por dia." />
+<meta property="og:url" content="https://krumora.com.br" />
+<meta property="og:site_name" content="Krumora" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;800&family=Handjet:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#030305; --bg-2:#06060a; --surface:#0b0b0f; --surface-2:#101017;
+  --border:#1c1c26; --border-2:#2a2a37;
+  /* ── PALETA NOMEADA — chame por estes nomes ── */
+  --rubro-krumora:#e11d3a;       /* vermelho neon principal da marca */
+  --rubro-profundo:#b8152c;      /* vermelho mais escuro/sangue */
+  --rubro-glow:rgba(225,29,58,.55); /* brilho neon (rgba do rubro) */
+  /* aliases internos (apontam pra paleta nomeada) */
+  --accent:var(--rubro-profundo); --accent-hi:var(--rubro-krumora); --accent-glow:var(--rubro-glow);
+  --text:#f2f2f7; --text-2:#9a9aab; --text-3:#5c5c6e;
+  --maxw:1180px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+  line-height:1.6; overflow-x:hidden; position:relative;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ── Backgrounds / canvas ── */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%, rgba(225,29,58,.20), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 88% 12%, rgba(184,21,44,.12), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 90%, rgba(96,120,250,.05), transparent 60%);
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+/* ── Nav ── */
+header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(3,3,5,.85),rgba(3,3,5,.45));
+  border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+header.nav.scrolled{border-bottom-color:var(--border);background:rgba(3,3,5,.9)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo-mark{width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(160deg,#0c0c12,#050507);
+  border:1.5px solid var(--accent-hi);display:grid;place-items:center;
+  box-shadow:0 0 18px rgba(225,29,58,.4), inset 0 0 10px rgba(225,29,58,.15);
+  transition:transform .3s}
+.brand:hover .logo-mark{transform:rotate(-8deg) scale(1.06)}
+.logo-img{width:48px;height:48px;object-fit:contain;display:block;flex-shrink:0;transition:transform .3s}
+.brand:hover .logo-img{transform:scale(1.08)}
+.foot-in .logo-img{width:44px;height:44px}
+.logo-mark span{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:20px;
+  color:var(--accent-hi);text-shadow:0 0 10px rgba(225,29,58,.9)}
+.brand-name{font-family:'Handjet',monospace;font-weight:800;font-size:27px;letter-spacing:.5px;
+  color:#fff;position:relative;line-height:1;padding-top:1px;
+  animation:pxFlicker 4.5s infinite steps(1),neonPulse 2.6s ease-in-out infinite}
+.brand-name .k-neon{color:var(--rubro-krumora);
+  text-shadow:0 0 10px var(--rubro-glow),0 0 18px rgba(225,29,58,.5)}
+@keyframes neonPulse{
+  0%,100%{text-shadow:0 0 6px rgba(225,29,58,.5),0 0 12px rgba(225,29,58,.25)}
+  50%{text-shadow:0 0 10px rgba(225,29,58,.8),0 0 22px rgba(225,29,58,.45),0 0 34px rgba(225,29,58,.25)}}
+/* glitch RGB layers */
+.brand-name::before,.brand-name::after{content:attr(data-text);position:absolute;left:0;top:2px;
+  width:100%;overflow:hidden;clip-path:inset(0 0 0 0);pointer-events:none}
+.brand-name::before{color:#e11d3a;text-shadow:0 0 6px rgba(225,29,58,.9);
+  animation:pxGlitchR 5s infinite steps(2)}
+.brand-name::after{color:#19d3e8;text-shadow:0 0 6px rgba(25,211,232,.6);
+  animation:pxGlitchC 5s infinite steps(2)}
+.brand:hover .brand-name::before{animation-duration:.5s}
+.brand:hover .brand-name::after{animation-duration:.5s}
+@keyframes pxFlicker{0%,92%,100%{opacity:1}94%{opacity:.55}96%{opacity:1}97%{opacity:.7}}
+@keyframes pxGlitchR{
+  0%,82%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+  83%{transform:translate(-1.5px,1px);clip-path:inset(0 0 55% 0);opacity:.9}
+  86%{transform:translate(2px,-1px);clip-path:inset(60% 0 0 0);opacity:.9}
+  89%{transform:translate(-1px,0);clip-path:inset(20% 0 40% 0);opacity:.9}
+  91%{transform:translate(0,0);opacity:0}}
+@keyframes pxGlitchC{
+  0%,82%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+  83%{transform:translate(1.5px,-1px);clip-path:inset(0 0 60% 0);opacity:.7}
+  86%{transform:translate(-2px,1px);clip-path:inset(55% 0 0 0);opacity:.7}
+  89%{transform:translate(1px,0);clip-path:inset(30% 0 30% 0);opacity:.7}
+  91%{transform:translate(0,0);opacity:0}}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-links a.lnk{padding:8px 14px;font-size:14px;color:var(--text-2);border-radius:9px;
+  font-weight:500;transition:color .2s,background .2s}
+.nav-links a.lnk:hover{color:var(--text);background:var(--surface)}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-weight:600;
+  font-size:14.5px;padding:11px 20px;border-radius:11px;cursor:pointer;border:1px solid transparent;
+  transition:transform .2s,box-shadow .25s,filter .2s,background .2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent-hi),var(--accent));color:#fff;
+  box-shadow:0 8px 26px -8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.18)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px -8px var(--accent-glow);filter:brightness(1.07)}
+.btn-ghost{background:var(--surface);color:var(--text);border-color:var(--border-2)}
+.btn-ghost:hover{transform:translateY(-2px);background:var(--surface-2);border-color:var(--accent)}
+.nav .nav-cta{display:flex}
+.nav-burger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px}
+
+/* ── Hero ── */
+.hero{padding:96px 0 90px;text-align:center;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:999px;
+  background:rgba(225,29,58,.08);border:1px solid rgba(225,29,58,.28);
+  font-size:12.5px;font-weight:600;letter-spacing:.3px;color:#ff9aa9;margin-bottom:30px;
+  box-shadow:0 0 24px -6px rgba(225,29,58,.4)}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 8px #22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-size:clamp(40px,7vw,80px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;
+  margin-bottom:24px}
+.hero h1 .neon{position:relative;color:#fff;
+  background:linear-gradient(180deg,#fff 30%,#ffd0d7 75%,var(--accent-hi));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 50px rgba(225,29,58,.45)}
+.hero p.sub{font-size:clamp(16px,2.4vw,21px);color:var(--text-2);max-width:660px;margin:0 auto 38px;
+  line-height:1.55}
+.hero p.sub b{color:var(--text);font-weight:600}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
+.hero-cta .btn{padding:15px 28px;font-size:16px}
+.demo-cta{margin-top:34px;text-align:center}
+.btn-demo{display:inline-flex;align-items:center;gap:10px;padding:14px 30px;border-radius:13px;
+  font-weight:700;font-size:16px;color:#fff;text-decoration:none;
+  background:linear-gradient(135deg,rgba(225,29,58,.14),rgba(225,29,58,.05));
+  border:1.5px solid var(--rubro-krumora);
+  box-shadow:0 0 22px -4px var(--rubro-glow),inset 0 0 18px -8px rgba(225,29,58,.4);
+  transition:transform .2s,box-shadow .25s,background .2s}
+.btn-demo:hover{transform:translateY(-3px);background:linear-gradient(135deg,rgba(225,29,58,.22),rgba(225,29,58,.08));
+  box-shadow:0 10px 34px -6px var(--rubro-glow)}
+.btn-demo .spark{filter:drop-shadow(0 0 6px var(--rubro-glow))}
+.demo-note{margin:12px auto 0;max-width:440px;font-size:12.5px;color:var(--text-3);line-height:1.5}
+.demo-note b{color:var(--text-2)}
+.trust{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;color:var(--text-3);font-size:13px}
+.trust span{display:inline-flex;align-items:center;gap:7px}
+.trust .ck{color:var(--accent-hi)}
+
+/* ── Dashboard mock ── */
+.mock{margin:64px auto 0;max-width:980px;position:relative;perspective:1600px}
+.mock-glow{position:absolute;inset:-40px -10px 10px;z-index:0;
+  background:radial-gradient(ellipse 60% 70% at 50% 0%,rgba(225,29,58,.28),transparent 70%);filter:blur(20px)}
+.mock-frame{position:relative;z-index:1;border:1px solid var(--border-2);border-radius:16px;overflow:hidden;
+  background:linear-gradient(160deg,#0a0a10,#050508);
+  box-shadow:0 50px 110px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(225,29,58,.08);
+  transform:rotateX(8deg);transform-origin:center top}
+.mock-bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--border)}
+.mock-bar i{width:11px;height:11px;border-radius:50%;background:#2a2a37;display:inline-block}
+.mock-bar i:nth-child(1){background:#e0564f}.mock-bar i:nth-child(2){background:#e0b24f}.mock-bar i:nth-child(3){background:#4fb866}
+.mock-bar .url{margin-left:14px;font-size:11.5px;color:var(--text-3);background:#0d0d13;padding:5px 12px;border-radius:7px;border:1px solid var(--border)}
+.mock-body{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:18px}
+.col{background:#08080d;border:1px solid var(--border);border-radius:10px;padding:11px;min-height:200px}
+.col h4{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-3);
+  margin-bottom:11px;display:flex;justify-content:space-between}
+.col h4 b{color:var(--accent-hi)}
+.lane{display:flex;flex-direction:column;gap:8px;min-height:160px}
+.lead{background:#0e0e15;border:1px solid var(--border);border-radius:8px;padding:9px;margin:0;
+  display:flex;align-items:center;gap:9px;will-change:transform}
+.lead.spawn{animation:leadIn .5s cubic-bezier(.22,1,.36,1)}
+.lead.leaving{opacity:0;transition:opacity .5s ease,transform .5s ease;transform:translateX(14px) scale(.9)}
+@keyframes leadIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.lead .av{position:relative;width:26px;height:26px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+  font-family:'Inter',sans-serif;font-weight:700;font-size:8.5px;color:#fff;
+  background:linear-gradient(135deg,var(--accent-hi),#6d28d9);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.lead .av .ch{position:absolute;right:-3px;bottom:-3px;width:14px;height:14px;border-radius:50%;
+  border:1.5px solid #0e0e15;display:grid;place-items:center}
+.lead .av .ch svg{width:8px;height:8px;display:block}
+.lead .ln{flex:1;min-width:0}.lead .ln i{display:block;height:6px;border-radius:3px;background:#22222e}
+.lead .ln i:first-child{margin-bottom:5px;background:#33333f}
+
+/* ── Section shell ── */
+section.block{padding:90px 0;position:relative}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent-hi);text-align:center;margin-bottom:14px;font-weight:600}
+.h2{font-size:clamp(28px,4.4vw,46px);font-weight:800;letter-spacing:-1.2px;text-align:center;
+  line-height:1.08;margin-bottom:16px}
+.lead-sub{text-align:center;color:var(--text-2);max-width:600px;margin:0 auto 56px;font-size:16.5px}
+
+/* ── Problem strip ── */
+.prob{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.prob .card{background:linear-gradient(165deg,var(--surface),var(--bg-2));border:1px solid var(--border);
+  border-radius:16px;padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.prob .card:hover{transform:translateY(-5px);border-color:rgba(225,29,58,.45);
+  box-shadow:0 24px 50px -22px var(--rubro-glow),0 0 26px -8px rgba(225,29,58,.35)}
+.prob .card .em{font-size:26px;margin-bottom:14px;display:block}
+.prob .card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.prob .card p{color:var(--text-2);font-size:14.5px}
+
+/* ── Steps ── */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{position:relative;background:linear-gradient(165deg,var(--surface),var(--bg-2));
+  border:1px solid var(--border);border-radius:16px;padding:26px 22px;
+  transition:transform .25s,border-color .25s,box-shadow .25s}
+.step:hover{transform:translateY(-5px);border-color:rgba(225,29,58,.45);
+  box-shadow:0 24px 50px -22px var(--rubro-glow),0 0 26px -8px rgba(225,29,58,.35)}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:'JetBrains Mono',monospace;
+  font-size:13px;font-weight:800;color:var(--accent-hi);opacity:.9;display:block;margin-bottom:14px}
+.step h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.step p{color:var(--text-2);font-size:14px}
+.step .arrow{position:absolute;right:-11px;top:50%;color:var(--border-2);font-size:18px;z-index:3}
+
+/* ── Features ── */
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feat{background:linear-gradient(165deg,var(--surface),var(--bg-2));border:1px solid var(--border);
+  border-radius:16px;padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.feat:hover{transform:translateY(-5px);border-color:rgba(225,29,58,.4);
+  box-shadow:0 24px 50px -22px rgba(225,29,58,.45)}
+.feat .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+  background:rgba(225,29,58,.1);border:1px solid rgba(225,29,58,.25);margin-bottom:18px}
+.feat h3{font-size:18px;font-weight:700;margin-bottom:9px}
+.feat p{color:var(--text-2);font-size:14.5px}
+
+/* ── Pricing ── */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+.plan{display:flex;flex-direction:column;background:linear-gradient(170deg,var(--surface),var(--bg-2));
+  border:1px solid var(--border);border-radius:18px;padding:28px 24px;position:relative;transition:transform .25s,border-color .25s}
+.plan:hover{transform:translateY(-4px)}
+.plan:not(.feature):not(.premium){transition:transform .25s,border-color .25s,box-shadow .25s}
+.plan:not(.feature):not(.premium):hover{border-color:rgba(225,29,58,.45);
+  box-shadow:0 24px 50px -22px var(--rubro-glow),0 0 26px -8px rgba(225,29,58,.35)}
+.plan.feature{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 30px 70px -30px var(--accent-glow)}
+.plan.premium{border-color:var(--rubro-krumora);
+  background:linear-gradient(170deg,rgba(225,29,58,.09),var(--bg-2));
+  animation:premiumGlow 3.2s ease-in-out infinite}
+.plan.premium:hover{transform:translateY(-6px)}
+.plan.premium::after{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(225,29,58,.14),transparent 70%)}
+.plan.premium > *{position:relative;z-index:1}
+/* raio vermelho orbitando a borda (feixe espacial) */
+@property --ray{syntax:'<angle>';inherits:false;initial-value:0deg}
+.plan.premium::before{content:'';position:absolute;inset:0;border-radius:18px;z-index:0;pointer-events:none;
+  padding:2px;
+  filter:drop-shadow(0 0 4px rgba(255,94,114,.8)) drop-shadow(0 0 9px rgba(225,29,58,.6));
+  background:conic-gradient(from var(--ray),
+    #8f1022,#ff5e72,#ffd0d7,#ff5e72,#8f1022,#ff5e72,#ffd0d7,#ff5e72,
+    #8f1022,#ff5e72,#ffd0d7,#ff5e72,#8f1022);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  animation:orbitRay 3.5s linear infinite}
+@keyframes orbitRay{to{--ray:360deg}}
+@keyframes premiumGlow{
+  0%,100%{box-shadow:0 0 0 1px var(--rubro-krumora),0 24px 56px -30px var(--rubro-glow)}
+  50%{box-shadow:0 0 0 1px var(--rubro-krumora),0 30px 84px -22px rgba(225,29,58,.72),0 0 46px -6px rgba(225,29,58,.4)}}
+.plan.premium .tagpop{background:linear-gradient(135deg,#ff3b54,#b8152c);
+  box-shadow:0 8px 22px -6px var(--rubro-glow),0 0 16px -2px rgba(225,29,58,.5)}
+.plan.premium .price .val{text-shadow:0 0 22px rgba(225,29,58,.55)}
+.plan .tagpop{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--accent-hi),var(--accent));color:#fff;
+  font-family:'Handjet',monospace;font-size:14px;font-weight:700;letter-spacing:1px;
+  padding:5px 15px;border-radius:999px;box-shadow:0 8px 20px -6px var(--accent-glow)}
+.plan .pname{font-size:15px;font-weight:700;letter-spacing:.3px;margin-bottom:6px}
+.plan .pdesc{color:var(--text-3);font-size:12.5px;min-height:34px;margin-bottom:16px}
+.plan .price{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}
+.plan .price .cur{font-size:16px;color:var(--text-2);font-weight:600}
+.plan .price .val{font-size:38px;font-weight:900;letter-spacing:-1.5px}
+.plan .price .per{font-size:13px;color:var(--text-3);font-weight:500}
+.plan .anchor{font-size:12.5px;color:var(--text-3);text-decoration:line-through;margin-bottom:18px;min-height:18px}
+.plan ul{list-style:none;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+.plan ul li{font-size:13.5px;color:var(--text-2);display:flex;gap:9px;align-items:flex-start}
+.plan ul li .ck{color:var(--accent-hi);flex-shrink:0;font-weight:800}
+.plan .btn{width:100%;justify-content:center;margin-top:auto}
+.plan-foot{text-align:center;color:var(--text-3);font-size:13px;margin-top:30px}
+
+/* ── Dogfood proof ── */
+.proof{background:linear-gradient(160deg,rgba(225,29,58,.07),rgba(11,11,15,.6));
+  border:1px solid rgba(225,29,58,.25);border-radius:22px;padding:54px 40px;text-align:center;position:relative;overflow:hidden}
+.proof::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 50% 70% at 50% 0%,rgba(225,29,58,.18),transparent 70%)}
+.proof-in{position:relative;z-index:1}
+.proof h2{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;margin-bottom:16px}
+.proof p{color:var(--text-2);font-size:17px;max-width:620px;margin:0 auto 30px}
+.proof .big{color:var(--accent-hi);font-weight:800}
+
+/* ── FAQ ── */
+.faq{max-width:760px;margin:0 auto}
+.qa{border:1px solid var(--border);border-radius:13px;margin-bottom:12px;background:var(--surface);overflow:hidden;
+  transition:border-color .25s,box-shadow .25s}
+.qa:hover{border-color:rgba(225,29,58,.4);box-shadow:0 14px 36px -20px var(--rubro-glow),0 0 20px -10px rgba(225,29,58,.3)}
+.qa summary{padding:20px 22px;font-weight:600;font-size:16px;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;transition:color .2s}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary:hover{color:var(--accent-hi)}
+.qa summary .pm{color:var(--accent-hi);font-size:22px;font-weight:300;transition:transform .25s;flex-shrink:0}
+.qa[open] summary .pm{transform:rotate(45deg)}
+.qa .ans{padding:0 22px 20px;color:var(--text-2);font-size:14.5px;line-height:1.6}
+
+/* ── Final CTA ── */
+.final{text-align:center;padding:96px 0}
+.final h2{font-size:clamp(30px,5vw,54px);font-weight:900;letter-spacing:-1.8px;line-height:1.05;margin-bottom:20px}
+.final h2 .neon{background:linear-gradient(180deg,#fff,#ffd0d7,var(--accent-hi));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.final p{color:var(--text-2);font-size:18px;max-width:540px;margin:0 auto 36px}
+.final .btn{padding:17px 36px;font-size:17px}
+
+/* ── Footer ── */
+footer{border-top:1px solid var(--border);padding:48px 0 40px;position:relative;z-index:2}
+.foot-in{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.foot-in .brand-name{font-size:26px}
+.foot-links{display:flex;gap:22px;flex-wrap:wrap}
+.foot-links a{color:var(--text-3);font-size:13.5px;transition:color .2s}
+.foot-links a:hover{color:var(--text)}
+.copy{color:var(--text-3);font-size:12.5px;margin-top:22px;text-align:center}
+
+/* ── Scroll reveal ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ── Floating WhatsApp ── */
+.fab{position:fixed;right:22px;bottom:22px;z-index:60;width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#25d366,#128c4b);display:grid;place-items:center;
+  box-shadow:0 12px 30px -8px rgba(37,211,102,.6);transition:transform .25s;cursor:pointer}
+.fab:hover{transform:scale(1.08)}
+.fab svg{width:30px;height:30px}
+
+/* ── Responsive ── */
+@media(max-width:920px){
+  .prob,.steps,.feats,.plans{grid-template-columns:1fr 1fr}
+  .step .arrow{display:none}
+  .mock-body{grid-template-columns:1fr 1fr}
+}
+@media(max-width:680px){
+  .nav-links{display:none}
+  .prob,.steps,.feats,.plans,.mock-body{grid-template-columns:1fr}
+  .hero{padding:60px 0 60px}
+  .mock-frame{transform:none}
+  section.block{padding:64px 0}
+  .proof{padding:40px 22px}
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <img class="logo-img" src="assets/logo.png" alt="Krumora" width="40" height="40">
+      <span class="brand-name" data-text="Krumora"><span class="k-neon">K</span>rumora</span>
+    </a>
+    <nav class="nav-links">
+      <a class="lnk" href="#como">Como funciona</a>
+      <a class="lnk" href="#recursos">Recursos</a>
+      <a class="lnk" href="#planos">Planos</a>
+      <a class="lnk" href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#cta-wa" data-wa>Falar com a IA agora</a>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dot"></span> IA vendedora · online 24h por dia</div>
+    <h1 class="reveal">A <span class="neon">IA que vende</span><br>enquanto você dorme.</h1>
+    <p class="sub reveal">A Krumora atende seu WhatsApp, <b>qualifica cada lead</b>, responde na hora e
+      conduz a venda até o fechamento — enquanto você cuida do resto. Tudo organizado num
+      <b>funil Kanban</b> que mostra cada cliente em tempo real.</p>
+    <div class="hero-cta reveal">
+      <a class="btn btn-primary" href="#cta-wa" data-wa>💬 Falar com a IA agora</a>
+      <a class="btn btn-ghost" href="#planos">Ver planos →</a>
+    </div>
+    <div class="trust reveal">
+      <span><span class="ck">✓</span> Sem app pra instalar</span>
+      <span><span class="ck">✓</span> Roda no seu WhatsApp</span>
+      <span><span class="ck">✓</span> Funciona em qualquer nicho</span>
+    </div>
+
+    <!-- Dashboard mock -->
+    <div class="mock reveal">
+      <div class="mock-glow"></div>
+      <div class="mock-frame">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="url mono">krumora.com.br/dashboard</span></div>
+        <div class="mock-body" id="kanban">
+          <div class="col"><h4>Novo lead <b class="cnt" data-c="novo">0</b></h4><div class="lane" data-col="novo"></div></div>
+          <div class="col"><h4>Qualificado <b class="cnt" data-c="qual">0</b></h4><div class="lane" data-col="qual"></div></div>
+          <div class="col"><h4>Proposta <b class="cnt" data-c="prop">0</b></h4><div class="lane" data-col="prop"></div></div>
+          <div class="col"><h4>Fechado <b class="cnt" data-c="fech">0</b></h4><div class="lane" data-col="fech"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-cta reveal">
+      <a class="btn-demo" href="#" data-demo><span class="spark">⚡</span> Testar demo grátis · 15 min</a>
+      <p class="demo-note">Conecte seu WhatsApp e veja a IA vender em tempo real — <b>modo seguro</b>: a IA só fala com nossos leads de teste, nunca com seus contatos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="block" id="dor">
+  <div class="wrap">
+    <div class="kicker reveal">O problema</div>
+    <h2 class="h2 reveal">Todo lead que espera, esfria.</h2>
+    <p class="lead-sub reveal">Você não perde vendas por falta de gente interessada. Perde porque
+      ninguém responde na hora — e quem responde primeiro, fecha.</p>
+    <div class="prob">
+      <div class="card reveal"><span class="em">😴</span><h3>Mensagem às 2h da manhã</h3>
+        <p>O cliente decide comprar fora do horário comercial. Quando você acorda, ele já comprou do concorrente.</p></div>
+      <div class="card reveal"><span class="em">🔁</span><h3>Responder o mesmo de sempre</h3>
+        <p>"Quanto custa?", "Tem disponível?", "Como funciona?" — você digita as mesmas respostas o dia inteiro.</p></div>
+      <div class="card reveal"><span class="em">📋</span><h3>Lead perdido no meio do caos</h3>
+        <p>Sem organização, conversas somem, follow-up não acontece e oportunidade vira prejuízo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="block" id="como">
+  <div class="wrap">
+    <div class="kicker reveal">Como funciona</div>
+    <h2 class="h2 reveal">Da primeira mensagem ao fechamento.</h2>
+    <p class="lead-sub reveal">A Krumora assume o atendimento de ponta a ponta — você só acompanha
+      pelo painel e entra quando quiser.</p>
+    <div class="steps">
+      <div class="step reveal"><h3>Cliente chama no WhatsApp</h3>
+        <p>Vindo do seu anúncio, bio ou indicação. A IA responde em segundos, qualquer hora.</p><span class="arrow">→</span></div>
+      <div class="step reveal"><h3>A IA qualifica e apresenta</h3>
+        <p>Entende o que o cliente quer e já apresenta o produto certo, com preço e link.</p><span class="arrow">→</span></div>
+      <div class="step reveal"><h3>Conduz até a venda</h3>
+        <p>Tira objeções, manda o checkout e faz follow-up sozinha se o cliente sumir.</p><span class="arrow">→</span></div>
+      <div class="step reveal"><h3>Você acompanha no Kanban</h3>
+        <p>Cada lead aparece no funil em tempo real. Entre na conversa quando fizer sentido.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block" id="recursos">
+  <div class="wrap">
+    <div class="kicker reveal">Recursos</div>
+    <h2 class="h2 reveal">Uma vendedora que não dorme, não falta e não esquece.</h2>
+    <p class="lead-sub reveal">Tudo que um time de vendas faria — automatizado e rodando no seu próprio número.</p>
+    <div class="feats">
+      <div class="feat reveal"><div class="ic">🤖</div><h3>IA vendedora 24/7</h3>
+        <p>Responde com o tom da sua marca, conhece seus produtos e conduz a conversa pra fechar — dia, noite e fim de semana.</p></div>
+      <div class="feat reveal"><div class="ic">📊</div><h3>Funil Kanban em tempo real</h3>
+        <p>Veja cada lead andar de "Novo" a "Fechado". Arraste, filtre e nunca mais perca uma oportunidade de vista.</p></div>
+      <div class="feat reveal"><div class="ic">⏰</div><h3>Follow-up automático</h3>
+        <p>Cliente sumiu? A IA volta sozinha, no horário certo, com a mensagem certa — sem ser inconveniente.</p></div>
+      <div class="feat reveal"><div class="ic">🎯</div><h3>Multi-nicho</h3>
+        <p>Eventos, serviços, produtos, info-produtos. A Krumora se molda ao seu negócio num setup conversacional.</p></div>
+      <div class="feat reveal"><div class="ic">🔗</div><h3>Checkout integrado</h3>
+        <p>A IA envia o link de pagamento na hora certa e confirma a compra automaticamente via webhook.</p></div>
+      <div class="feat reveal"><div class="ic">🔒</div><h3>Seus dados, blindados</h3>
+        <p>As conversas do seu WhatsApp são privadas. Você controla quem acessa e quando — total transparência.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="block" id="planos">
+  <div class="wrap">
+    <div class="kicker reveal">Planos</div>
+    <h2 class="h2 reveal">Comece testando. Cresça quando quiser.</h2>
+    <p class="lead-sub reveal">Do primeiro teste ao bot instalado e funcionando pra você. Escolha por onde começar.</p>
+    <div class="plans">
+
+      <div class="plan reveal">
+        <div class="pname">Demo Gratuita</div>
+        <div class="pdesc">Veja a IA vender na prática, sem pagar nada.</div>
+        <div class="price"><span class="val">Grátis</span></div>
+        <div class="anchor">teste sem compromisso</div>
+        <ul>
+          <li><span class="ck">✓</span> Converse com a IA da Krumora ao vivo</li>
+          <li><span class="ck">✓</span> Veja como ela qualifica e vende</li>
+          <li><span class="ck">✓</span> Sem cartão, sem instalar nada</li>
+        </ul>
+        <a class="btn btn-ghost" href="#" data-demo>Testar grátis</a>
+      </div>
+
+      <div class="plan feature reveal">
+        <div class="tagpop">MAIS ESCOLHIDO</div>
+        <div class="pname">Funcionário IA</div>
+        <div class="pdesc">Sua IA vendedora instalada e vendendo no seu WhatsApp.</div>
+        <div class="price"><span class="cur">R$</span><span class="val">197</span><span class="per">/mês</span></div>
+        <div class="anchor">+ R$ 497 de setup único</div>
+        <ul>
+          <li><span class="ck">✓</span> IA vendedora 24/7 no seu número</li>
+          <li><span class="ck">✓</span> Funil Kanban em tempo real</li>
+          <li><span class="ck">✓</span> Follow-up automático dos leads</li>
+          <li><span class="ck">✓</span> Checkout integrado</li>
+        </ul>
+        <a class="btn btn-primary" href="#cta-wa" data-wa>Quero contratar</a>
+      </div>
+
+      <div class="plan premium reveal">
+        <div class="tagpop">★ PREMIUM</div>
+        <div class="pname">Pronto (DFY)</div>
+        <div class="pdesc">Não quer mexer em nada — a gente instala tudo pra você.</div>
+        <div class="price"><span class="cur">R$</span><span class="val">5.997</span></div>
+        <div class="anchor">+ R$ 197/mês de manutenção (a partir do 4º mês)</div>
+        <ul>
+          <li><span class="ck">✓</span> Tudo do Funcionário IA, instalado por nós</li>
+          <li><span class="ck">✓</span> 4 mentorias 1:1</li>
+          <li><span class="ck">✓</span> Setup de Meta Ads incluso</li>
+          <li><span class="ck">✓</span> 90 dias de suporte premium</li>
+        </ul>
+        <a class="btn btn-ghost" href="#cta-wa" data-wa>Quero pronto</a>
+      </div>
+
+    </div>
+    <p class="plan-foot reveal">🛒 No checkout, adicione o <b>Comprador IA</b> (+R$97/mês): a IA cota com seus fornecedores e fecha no menor preço, sozinha. · Sem fidelidade · Cancele quando quiser</p>
+  </div>
+</section>
+
+<!-- DOGFOOD PROOF -->
+<section class="block">
+  <div class="wrap">
+    <div class="proof reveal">
+      <div class="proof-in">
+        <h2>Você acabou de ver a Krumora trabalhando.</h2>
+        <p>A <span class="big">IA que te atender no WhatsApp</span> é a mesma que você vai colocar
+          pra vender no seu negócio. Se ela convence você agora, imagina vendendo pra seus clientes.</p>
+        <a class="btn btn-primary" href="#cta-wa" data-wa>Conversar com a IA</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="kicker reveal">Dúvidas</div>
+    <h2 class="h2 reveal">Perguntas frequentes</h2>
+    <div class="faq" style="margin-top:40px">
+      <details class="qa reveal"><summary>A IA roda no meu próprio WhatsApp? <span class="pm">+</span></summary>
+        <div class="ans">Sim. A Krumora conecta no seu número de WhatsApp e atende como se fosse alguém do seu time.
+          Você continua com acesso total às conversas a qualquer momento.</div></details>
+      <details class="qa reveal"><summary>Funciona pro meu nicho? <span class="pm">+</span></summary>
+        <div class="ans">A Krumora é multi-nicho. No setup, ela "entrevista" o seu negócio e se adapta — seja eventos,
+          serviços, produtos físicos ou info-produtos. Ela aprende o que você vende e como você vende.</div></details>
+      <details class="qa reveal"><summary>Preciso saber programar? <span class="pm">+</span></summary>
+        <div class="ans">Não. No plano <b>Pronto</b> a gente instala e configura tudo pra você. Na
+          <b>Fábrica de Funcionários</b>, ensinamos passo a passo, do zero, sem pré-requisito técnico.</div></details>
+      <details class="qa reveal"><summary>E a segurança dos meus dados? <span class="pm">+</span></summary>
+        <div class="ans">Suas conversas são privadas e ficam na sua instância. Você controla quem acessa o painel e,
+          se precisar de manutenção, libera o acesso por tempo limitado — com registro de quem entrou e quando.</div></details>
+      <details class="qa reveal"><summary>Como começo? <span class="pm">+</span></summary>
+        <div class="ans">Clicando em qualquer botão desta página você fala com a própria IA da Krumora no WhatsApp.
+          Ela te explica tudo e te ajuda a escolher o melhor plano. É o jeito mais rápido de ver funcionando.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="cta-wa">
+  <div class="wrap">
+    <h2 class="reveal">Sua próxima venda<br><span class="neon">pode acontecer dormindo.</span></h2>
+    <p class="reveal">Fale agora com a IA da Krumora no WhatsApp e veja, na prática, como ela vende por você.</p>
+    <a class="btn btn-primary reveal" href="#" data-wa>💬 Falar com a IA agora</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-in">
+    <a class="brand" href="#top">
+      <img class="logo-img" src="assets/logo.png" alt="Krumora" width="40" height="40">
+      <span class="brand-name" data-text="Krumora"><span class="k-neon">K</span>rumora</span>
+    </a>
+    <nav class="foot-links">
+      <a href="#como">Como funciona</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#planos">Planos</a>
+      <a href="#faq">FAQ</a>
+      <a href="#cta-wa" data-wa>WhatsApp</a>
+    </nav>
+  </div>
+  <div class="wrap"><p class="copy mono">© 2026 Krumora · A IA que vende enquanto você dorme.</p></div>
+</footer>
+
+<!-- DEMO LEAD MODAL -->
+<style>
+.kmodal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(3,3,5,.78);backdrop-filter:blur(6px)}
+.kmodal.open{display:flex;animation:kfade .25s ease}
+@keyframes kfade{from{opacity:0}to{opacity:1}}
+.kmodal-box{position:relative;width:100%;max-width:440px;background:linear-gradient(165deg,#0b0b0f,#06060a);
+  border:1px solid var(--border-2);border-radius:18px;padding:34px 30px;
+  box-shadow:0 40px 100px -30px rgba(0,0,0,.9),0 0 0 1px rgba(225,29,58,.1)}
+.kmodal-box h3{font-size:23px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.kmodal-box p.km-sub{color:var(--text-2);font-size:14px;margin-bottom:22px}
+.kmodal-box label{display:block;font-size:12.5px;color:var(--text-2);margin:0 0 6px;font-weight:500}
+.kmodal-box input{width:100%;background:#0d0d13;border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-family:inherit;font-size:15px;margin-bottom:14px;transition:border-color .2s}
+.kmodal-box input:focus{outline:none;border-color:var(--accent-hi)}
+.kmodal-box .btn{width:100%;justify-content:center;margin-top:6px;padding:14px}
+.kmodal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--text-3);
+  font-size:26px;cursor:pointer;line-height:1;transition:color .2s}
+.kmodal-close:hover{color:var(--text)}
+.km-note{text-align:center;font-size:11.5px;color:var(--text-3);margin-top:14px}
+</style>
+<div class="kmodal" id="demoModal" role="dialog" aria-modal="true" aria-labelledby="demoTitle">
+  <div class="kmodal-box">
+    <button class="kmodal-close" data-demo-close aria-label="Fechar">×</button>
+    <h3 id="demoTitle">Testar a IA grátis ⚡</h3>
+    <p class="km-sub">Preencha e fale com a IA da Krumora no WhatsApp — veja ela vender ao vivo.</p>
+    <form id="demoForm">
+      <label for="dmNome">Seu nome</label>
+      <input id="dmNome" name="nome" type="text" placeholder="Como podemos te chamar?" required>
+      <label for="dmEmail">E-mail</label>
+      <input id="dmEmail" name="email" type="email" placeholder="seu@email.com" required>
+      <label for="dmTel">WhatsApp / Celular</label>
+      <input id="dmTel" name="tel" type="tel" placeholder="(00) 00000-0000" required>
+      <button class="btn btn-primary" type="submit">💬 Começar a demo no WhatsApp</button>
+    </form>
+    <p class="km-note">🔒 Seus dados são usados só pra te atender. Sem spam.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var WA = '554791549404';
+  var modal = document.getElementById('demoModal');
+  var form = document.getElementById('demoForm');
+  if(!modal || !form) return;
+  function openModal(e){ if(e) e.preventDefault(); modal.classList.add('open'); setTimeout(function(){ document.getElementById('dmNome').focus(); }, 60); }
+  function closeModal(){ modal.classList.remove('open'); }
+  document.querySelectorAll('[data-demo]').forEach(function(b){ b.addEventListener('click', openModal); });
+  document.querySelectorAll('[data-demo-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var nome = document.getElementById('dmNome').value.trim();
+    var email = document.getElementById('dmEmail').value.trim();
+    var tel = document.getElementById('dmTel').value.trim();
+    var msg = 'Oi Aurora! Quero testar a demo da Krumora 🚀\n\nNome: ' + nome + '\nE-mail: ' + email + '\nTel: ' + tel;
+    window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    closeModal();
+  });
+})();
+</script>
+
+<!-- Floating WhatsApp -->
+<a class="fab" href="#" data-wa aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.8L.5 31.5l7.9-2c2.3 1.2 4.9 1.9 7.6 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.2-4.6-.3-.5c-1.3-2.1-2-4.5-2-7 0-7.2 5.9-13 13-13s13 5.8 13 13-5.8 13-13 13zm7.1-9.7c-.4-.2-2.3-1.1-2.7-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.2 1.5-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3.1-1.9-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8.2-.2.4-.4.5-.7.2-.2.2-.4.4-.7.1-.3 0-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.8-.6-.6-.9-.7h-.7c-.2 0-.6.1-1 .5-.3.4-1.3 1.3-1.3 3.1 0 1.8 1.3 3.6 1.5 3.8.2.2 2.6 4 6.3 5.6.9.4 1.6.6 2.1.8.9.3 1.7.2 2.3.1.7-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.3-.3-.7-.5z"/></svg>
+</a>
+
+<script>
+(function(){
+  // ── CONFIG: troque pelo número real do WhatsApp (formato internacional, só dígitos) ──
+  var WHATSAPP_NUMBER = '554791549404';   // Sofia/Aurora · +55 47 9154-9404
+  var WHATSAPP_MSG = 'Oi! Vim pela krumora.com.br e quero saber como a IA pode vender pra mim.';
+
+  var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(WHATSAPP_MSG);
+  document.querySelectorAll('[data-wa]').forEach(function(a){ a.setAttribute('href', waLink); a.setAttribute('target','_blank'); a.setAttribute('rel','noopener'); });
+
+  // ── Nav shadow on scroll ──
+  var nav = document.getElementById('nav');
+  var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  // ── Scroll reveal ──
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el,i){
+    el.style.transitionDelay = ((i % 4) * 60) + 'ms';
+    io.observe(el);
+  });
+
+  // ── Starfield canvas ──
+  var c = document.getElementById('stars'), ctx = c.getContext('2d');
+  var stars = [], W, H, DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function resize(){
+    W = c.width = innerWidth * DPR; H = c.height = innerHeight * DPR;
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    var n = Math.min(140, Math.floor(innerWidth / 11));
+    stars = [];
+    for(var i=0;i<n;i++){
+      stars.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: (Math.random()*1.3 + .3) * DPR,
+        a: Math.random()*.6 + .15,
+        tw: Math.random()*.02 + .004,
+        d: Math.random() < .5 ? 1 : -1,
+        red: Math.random() < .22
+      });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<stars.length;i++){
+      var s = stars[i];
+      s.a += s.tw * s.d;
+      if(s.a > .85){ s.a = .85; s.d = -1; } else if(s.a < .12){ s.a = .12; s.d = 1; }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+      if(s.red){ ctx.fillStyle = 'rgba(225,29,58,' + s.a + ')'; ctx.shadowColor = 'rgba(225,29,58,.9)'; ctx.shadowBlur = 6*DPR; }
+      else { ctx.fillStyle = 'rgba(235,235,245,' + (s.a*.8) + ')'; ctx.shadowBlur = 0; }
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(draw);
+  }
+  resize(); draw();
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(resize, 200); });
+})();
+
+// ── Kanban vivo: leads migrando entre colunas (FLIP) ──
+(function(){
+  var kanban = document.getElementById('kanban');
+  if(!kanban) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var COLS = ['novo','qual','prop','fech'];
+  var CAP = 4; // máx de leads por coluna
+  var lanes = {};
+  COLS.forEach(function(k){ lanes[k] = kanban.querySelector('.lane[data-col="'+k+'"]'); });
+
+  var NAMES = ['Marina','Bruno','Carla','Diego','Aline','Rafael','Júlia','Léo','Paula','Thiago',
+               'Bia','Gabriel','Sofia','Caio','Nina','Igor','Lara','Vitor','Duda','Murilo','Helena','Pedro'];
+  // canais (WhatsApp pesa mais — é o coração do produto)
+  var CH = {
+    wa:{bg:'#25d366', svg:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.3A10 10 0 1012 2zm4.4 12c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.8c-.1.2-.3.2-.5.1a6.5 6.5 0 01-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5.2-.4v-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2 1 2.4c.1.2 1.6 2.5 4 3.4.6.3 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1z"/></svg>'},
+    ig:{bg:'#e1306c', svg:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2c-2.7 0-3 0-4.1.1-1 0-1.8.2-2.4.5-.7.2-1.2.6-1.8 1.1-.5.6-.9 1.1-1.1 1.8-.3.6-.4 1.4-.5 2.4C2 9 2 9.3 2 12s0 3 .1 4.1c0 1 .2 1.8.5 2.4.2.7.6 1.2 1.1 1.8.6.5 1.1.9 1.8 1.1.6.3 1.4.4 2.4.5 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c1 0 1.8-.2 2.4-.5.7-.2 1.2-.6 1.8-1.1.5-.6.9-1.1 1.1-1.8.3-.6.4-1.4.5-2.4 0-1.1.1-1.4.1-4.1s0-3-.1-4.1c0-1-.2-1.8-.5-2.4-.2-.7-.6-1.2-1.1-1.8-.6-.5-1.1-.9-1.8-1.1-.6-.3-1.4-.4-2.4-.5C15 2 14.7 2 12 2zm0 4.9a5.1 5.1 0 100 10.2 5.1 5.1 0 000-10.2zm0 8.4a3.3 3.3 0 110-6.6 3.3 3.3 0 010 6.6zm6.5-8.6a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>'},
+    tt:{bg:'#ff2c55', svg:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M16.6 5.8c-.9-.6-1.5-1.6-1.7-2.8h-2.7v11.1c0 1.3-1.1 2.4-2.4 2.4s-2.4-1.1-2.4-2.4 1.1-2.4 2.4-2.4c.3 0 .5 0 .7.1V9c-.2 0-.5-.1-.7-.1a5.2 5.2 0 100 10.4 5.2 5.2 0 005.2-5.2V8.7c1 .7 2.3 1.2 3.6 1.2V7.2c-.7 0-1.4-.2-1.9-.6z"/></svg>'},
+    tg:{bg:'#2aabee', svg:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M21.9 4.3l-3 14.1c-.2 1-.8 1.2-1.6.8L13 16l-2 1.9c-.2.2-.4.4-.8.4l.3-4 7.3-6.6c.3-.3-.1-.4-.5-.2L8 12.1l-3.9-1.2c-.8-.3-.9-.8.2-1.2l15.2-5.9c.7-.2 1.3.2 1.4 1.5z"/></svg>'}
+  };
+  var CH_POOL = ['wa','wa','wa','wa','ig','ig','tt','tg'];
+  var GRADS = ['linear-gradient(135deg,#e11d3a,#6d28d9)','linear-gradient(135deg,#f59e0b,#e11d3a)',
+               'linear-gradient(135deg,#3b82f6,#06b6d4)','linear-gradient(135deg,#8b5cf6,#ec4899)',
+               'linear-gradient(135deg,#10b981,#3b82f6)','linear-gradient(135deg,#ec4899,#f59e0b)'];
+
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function initials(n){ return (n[0] + (n[1]||'')).toUpperCase(); }
+  function updateCounts(){
+    COLS.forEach(function(k){
+      var b = kanban.querySelector('.cnt[data-c="'+k+'"]');
+      if(b) b.textContent = lanes[k].querySelectorAll('.lead:not(.leaving)').length;
+    });
+  }
+  function makeLead(){
+    var name = rand(NAMES), ch = CH[rand(CH_POOL)];
+    var el = document.createElement('div');
+    el.className = 'lead spawn';
+    var w1 = 58 + Math.floor(Math.random()*28), w2 = 34 + Math.floor(Math.random()*26);
+    el.innerHTML =
+      '<div class="av" style="background:'+rand(GRADS)+'">'+initials(name)+
+        '<span class="ch" style="background:'+ch.bg+'">'+ch.svg+'</span></div>'+
+      '<div class="ln"><i style="width:'+w1+'%"></i><i style="width:'+w2+'%"></i></div>';
+    return el;
+  }
+  // FLIP: anima todos os cards das posições antigas -> novas
+  function flip(mover){
+    var cards = Array.prototype.slice.call(kanban.querySelectorAll('.lead'));
+    var firsts = cards.map(function(c){ return c.getBoundingClientRect(); });
+    mover();
+    cards.forEach(function(c,i){
+      if(!c.parentNode) return;
+      var last = c.getBoundingClientRect();
+      var dx = firsts[i].left - last.left, dy = firsts[i].top - last.top;
+      if(dx || dy){ c.style.transition='none'; c.style.transform='translate('+dx+'px,'+dy+'px)'; }
+    });
+    kanban.getBoundingClientRect(); // reflow
+    cards.forEach(function(c){
+      if(c.parentNode && c.style.transform){
+        c.style.transition='transform .65s cubic-bezier(.22,1,.36,1)';
+        c.style.transform='';
+      }
+    });
+  }
+  function advance(){
+    var cand = [];
+    for(var i=0;i<3;i++){
+      if(lanes[COLS[i]].querySelectorAll('.lead:not(.leaving)').length &&
+         lanes[COLS[i+1]].querySelectorAll('.lead:not(.leaving)').length < CAP){ cand.push(i); }
+    }
+    if(!cand.length) return;
+    var i = rand(cand), lane = lanes[COLS[i]];
+    var live = lane.querySelectorAll('.lead:not(.leaving)');
+    var card = live[live.length-1]; // o de baixo avança
+    flip(function(){ lanes[COLS[i+1]].insertBefore(card, lanes[COLS[i+1]].firstChild); });
+    updateCounts();
+    if(i+1 === 3){ // chegou em "Fechado" -> fecha e sai
+      setTimeout(function(){
+        card.classList.add('leaving'); updateCounts();
+        setTimeout(function(){ if(card.parentNode){ card.parentNode.removeChild(card); updateCounts(); } }, 520);
+      }, 2600);
+    }
+  }
+  function spawn(){
+    if(lanes.novo.querySelectorAll('.lead:not(.leaving)').length >= CAP) return;
+    var el = makeLead();
+    lanes.novo.insertBefore(el, lanes.novo.firstChild);
+    updateCounts();
+    setTimeout(function(){ el.classList.remove('spawn'); }, 520);
+  }
+  function seed(){
+    var dist = {novo:3, qual:2, prop:2, fech:1};
+    COLS.forEach(function(k){
+      for(var n=0;n<dist[k];n++){ var el = makeLead(); el.classList.remove('spawn'); lanes[k].appendChild(el); }
+    });
+    updateCounts();
+  }
+
+  seed();
+  if(!reduce){
+    setInterval(advance, 1900);
+    setInterval(spawn, 2400);
+  }
+})();
+</script>
+</body>
+</html>
