@@ -64,6 +64,7 @@ a{color:inherit;text-decoration:none}
 .card .tag{display:inline-block;margin-top:7px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--text-2)}
 .card.win{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok),0 0 24px -6px var(--ok)}
 .card.win .tag{background:rgba(61,214,106,.15);color:var(--ok)}
+.card.glow{box-shadow:0 0 0 1px var(--cyan),0 0 22px -6px var(--cyan);border-color:var(--cyan)}
 .chat{background:linear-gradient(165deg,var(--surface),#05050a);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;height:520px;position:sticky;top:14px}
 .chat-h{display:flex;align-items:center;gap:10px;padding:13px 15px;background:rgba(225,29,58,.06);border-bottom:1px solid var(--border)}
 .chat-h .pic{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--rubro-hi),var(--rubro));display:grid;place-items:center;font-weight:800}
@@ -135,7 +136,7 @@ a{color:inherit;text-decoration:none}
     <div class="chat">
       <div class="chat-h">
         <div class="pic">A</div>
-        <div><div class="nm">Aurora</div><div class="st"><span class="dot"></span>vendendo agora</div></div>
+        <div><div class="nm" id="chat-nm">Aurora</div><div class="st"><span class="dot"></span><span id="chat-st">vendendo agora</span></div></div>
       </div>
       <div class="chat-body" id="chat"></div>
     </div>
@@ -158,115 +159,155 @@ a{color:inherit;text-decoration:none}
   var leadName=(params.get('nome')||'').trim();
   var urlNiche=(params.get('nicho')||'').trim().toLowerCase();
 
+  // Nomes (pool grande p/ evitar repetição) + várias CONVERSAS distintas por nicho.
   var NICHES={
-    restaurante:{label:'restaurante',nomes:['Marina','Carlos','Júlia','Rafael','Bruna','Diego','Patrícia','Tiago'],
-      script:[
-        {c:'Oi! Vocês têm mesa pra hoje à noite, uns 4 lugares?',a:'Oi! 😊 Temos sim! Pra que horas você quer reservar? Posso já deixar a mesa separada.'},
-        {c:'Umas 20h. Qual o couvert?',a:'Perfeito, 20h anotado! O couvert é R$ 15 por pessoa e inclui o petisco da casa 🍽️ Confirmo a reserva no seu nome?'},
-        {c:'Pode confirmar!',a:'Reserva confirmada pra 4 pessoas às 20h ✅ Te espero! Qualquer coisa é só chamar. 🎉'}
+    restaurante:{label:'restaurante',
+      nomes:['Marina','Carlos','Júlia','Rafael','Bruna','Diego','Patrícia','Tiago','Camila','Leandro','Aline','Murilo','Renan','Sofia'],
+      convos:[
+        [{c:'Oi! Vocês têm mesa pra hoje, 4 pessoas?',a:'Temos sim! 😊 Pra que horas? Já separo a mesa.'},{c:'Umas 20h',a:'Mesa pra 4 às 20h confirmada ✅ Te espero! 🎉'}],
+        [{c:'Qual o rodízio de hoje?',a:'Hoje é rodízio de pizza 🍕 R$ 49 por pessoa, das 19h às 23h. Quer reservar?'},{c:'Pra 2 pessoas',a:'Reserva pra 2 no rodízio ✅ Bom apetite! 🎉'}],
+        [{c:'Vocês fazem delivery?',a:'Fazemos! 🛵 Entrega em ~40min na sua região. Quer ver o cardápio?'},{c:'Manda o cardápio',a:'Mandei aqui no WhatsApp 📋 É só escolher que eu já anoto seu pedido!'}],
+        [{c:'Tem opção vegetariana?',a:'Temos várias! 🥗 Risoto de funghi, parmegiana de berinjela e mais. Quer reservar?'},{c:'Sim, hoje 21h',a:'Mesa às 21h reservada ✅ 🎉'}]
       ]},
-    barbearia:{label:'barbearia',nomes:['Lucas','Pedro','André','Felipe','Gustavo','Vinícius','Mateus','Bruno'],
-      script:[
-        {c:'Quanto tá o combo corte + barba?',a:'Opa! 💈 O combo corte + barba sai R$ 60. Quer já agendar? Tenho hoje e amanhã.'},
-        {c:'Tem amanhã de tarde?',a:'Tenho sim! Amanhã às 15h ou 16h30 — qual fica melhor pra você?'},
-        {c:'15h tá ótimo',a:'Fechado, amanhã 15h no seu nome ✂️✅ Te espero! Se precisar remarcar é só chamar.'}
+    barbearia:{label:'barbearia',
+      nomes:['Lucas','Pedro','André','Felipe','Gustavo','Vinícius','Mateus','Bruno','Caio','Thiago','Júnior','Rodrigo','Davi','Igor'],
+      convos:[
+        [{c:'Quanto tá o combo corte + barba?',a:'Opa! 💈 Combo corte + barba sai R$ 60. Quer agendar? Tenho hoje e amanhã.'},{c:'Amanhã 15h pode?',a:'Fechado, amanhã 15h no seu nome ✂️✅'}],
+        [{c:'Vocês fazem sobrancelha?',a:'Fazemos! Sobrancelha R$ 20, ou no combo com a barba sai R$ 70 😉 Quer marcar?'},{c:'Quero o combo',a:'Show! Te encaixo amanhã 16h ✅'}],
+        [{c:'Tem horário hoje ainda?',a:'Tenho às 18h e 19h hoje 💈 Qual fica melhor?'},{c:'18h',a:'Anotado, 18h hoje no seu nome ✅ Te espero!'}],
+        [{c:'Faz corte infantil?',a:'Fazemos! Corte infantil R$ 35, super tranquilo com a criançada 👦 Quer agendar?'},{c:'Sábado de manhã',a:'Sábado 10h reservado ✅ Até lá!'}]
       ]},
-    loja:{label:'loja',nomes:['Ana','Roberto','Camila','Fernando','Letícia','Marcos','Sabrina','Eduardo'],
-      script:[
-        {c:'Aquele tênis do insta tem 42?',a:'Oi! 👟 Deixa eu ver... tem sim, 42 disponível! Sai R$ 299 ou 3x sem juros. Quer que eu separe?'},
-        {c:'Vocês entregam?',a:'Entregamos! 🚚 Aqui na cidade chega em 1 dia útil, frete grátis acima de R$ 250. Quer fechar?'},
-        {c:'Quero sim!',a:'Show! Já vou gerar seu link de pagamento 💳 Assim que confirmar, despacho hoje mesmo. 🎉'}
+    loja:{label:'loja',
+      nomes:['Ana','Roberto','Camila','Fernando','Letícia','Marcos','Sabrina','Eduardo','Natália','Vitor','Bianca','Otávio','Carla','Yuri'],
+      convos:[
+        [{c:'Aquele tênis do insta tem 42?',a:'Tem sim! 👟 R$ 299 ou 3x sem juros. Quer que eu separe?'},{c:'Quero!',a:'Separado ✅ Já te mando o link de pagamento 💳 🎉'}],
+        [{c:'Vocês entregam hoje?',a:'Entregamos! 🛵 Pedidos até 16h saem hoje. O que você quer?'},{c:'Uma camiseta P preta',a:'Anotado ✅ Mando o link e despacho hoje 🎉'}],
+        [{c:'Tem desconto no pix?',a:'Tem! 5% no pix 💸 Qual produto você quer?'},{c:'O moletom cinza',a:'Moletom no pix com 5% off ✅ Link a caminho!'}],
+        [{c:'Parcela em quantas vezes?',a:'Até 6x sem juros 💳 Quer fechar algum item?'},{c:'O tênis branco 40',a:'Fechado, 6x sem juros ✅ 🎉'}]
       ]},
-    clinica:{label:'clínica',nomes:['Juliana','Renata','Beatriz','Amanda','Carolina','Priscila','Tatiane','Vanessa'],
-      script:[
-        {c:'Quero marcar uma limpeza de pele',a:'Oi! 💆 Que ótimo! A limpeza de pele profunda sai R$ 180 e dura ~1h. Prefere manhã ou tarde?'},
-        {c:'De tarde, pode ser quinta?',a:'Quinta às 14h ou 16h — qual prefere? Já deixo reservado ✨'},
-        {c:'14h',a:'Agendado, quinta 14h no seu nome ✅ Te mando um lembrete na véspera. Até lá! 💖'}
+    clinica:{label:'clínica',
+      nomes:['Juliana','Renata','Beatriz','Amanda','Carolina','Priscila','Tatiane','Vanessa','Fernanda','Larissa','Mariana','Gabriela','Helena','Isabela'],
+      convos:[
+        [{c:'Quero marcar limpeza de pele',a:'Que ótimo! 💆 Limpeza profunda R$ 180, ~1h. Manhã ou tarde?'},{c:'Quinta de tarde',a:'Quinta 14h reservado ✅ Te mando lembrete 💖'}],
+        [{c:'Quanto custa massagem relaxante?',a:'Massagem relaxante 50min sai R$ 130 💆 Quer agendar?'},{c:'Sábado',a:'Sábado 11h no seu nome ✅'}],
+        [{c:'Fazem design de sobrancelha?',a:'Fazemos! ✨ Design com henna R$ 45. Tenho horário hoje. Quer?'},{c:'Hoje 17h',a:'17h reservado ✅ Te espero!'}],
+        [{c:'Tem pacote de drenagem?',a:'Tem! 10 sessões por R$ 900 (R$ 90 cada) 💧 Quer começar?'},{c:'Quero sim',a:'Pacote fechado ✅ Marco sua 1ª sessão 🎉'}]
       ]},
-    construtora:{label:'obra',nomes:['Sr. Antônio','Eng. Paulo','Cláudia','Ricardo','Sandra','José','Marcelo','Fátima'],
-      script:[
-        {c:'Preciso de orçamento pra reforma de um apê de 70m²',a:'Bom dia! 🏗️ Claro! É reforma completa ou pontos específicos (piso, pintura, hidráulica)?'},
-        {c:'Completa. Piso, pintura e elétrica.',a:'Perfeito. Faço uma visita técnica grátis pra fechar o valor exato. Tenho terça ou quarta — qual fica bom?'},
-        {c:'Terça de manhã',a:'Agendado, terça 9h pra visita ✅ Levo a proposta detalhada no mesmo dia. Até terça! 🤝'}
+    construtora:{label:'obra',
+      nomes:['Sr. Antônio','Eng. Paulo','Cláudia','Ricardo','Sandra','José','Marcelo','Fátima','Dr. Nelson','Vera','Sérgio','Lúcia','Adriano','Rosa'],
+      convos:[
+        [{c:'Preciso de orçamento de reforma, apê 70m²',a:'Claro! 🏗️ Completa ou pontos específicos (piso, pintura, hidráulica)?'},{c:'Completa',a:'Faço visita técnica grátis pra fechar o valor. Terça ou quarta?'},{c:'Terça 9h',a:'Visita terça 9h ✅ Levo a proposta no dia 🤝'}],
+        [{c:'Vocês fazem projeto de área gourmet?',a:'Fazemos! 🔨 Projeto + execução. Quer uma visita pra orçar?'},{c:'Quero',a:'Agendo a visita ✅ Sem compromisso 🤝'}],
+        [{c:'Quanto custa pintura de um apê?',a:'Depende do m² 🎨 Faço o orçamento na visita, grátis. Quando posso ir?'},{c:'Sexta de manhã',a:'Sexta 9h marcado ✅'}],
+        [{c:'Fazem reforma de banheiro?',a:'Fazemos! 🚿 Reforma completa. Visita técnica grátis pra orçar — qual dia?'},{c:'Quarta',a:'Quarta 10h ✅ Te levo a proposta 🤝'}]
       ]},
-    servicos:{label:'negócio',nomes:['Sérgio','Daniela','Wesley','Larissa','Rodrigo','Aline','Henrique','Cris'],
-      script:[
-        {c:'Vocês atendem no sábado?',a:'Oi! 😊 Atendemos sim, sábado das 8h às 13h. Qual serviço você precisa? Já te passo o valor.'},
-        {c:'Quanto custa o serviço básico?',a:'O básico sai R$ 120 e fica pronto no mesmo dia. Quer que eu agende um horário no sábado?'},
-        {c:'Pode agendar!',a:'Fechado! Sábado 9h no seu nome ✅ Confirmo na sexta. Qualquer coisa é só chamar. 🙌'}
+    servicos:{label:'negócio',
+      nomes:['Sérgio','Daniela','Wesley','Larissa','Rodrigo','Aline','Henrique','Cris','Tati','Wagner','Simone','Fábio','Joana','Elias'],
+      convos:[
+        [{c:'Vocês atendem sábado?',a:'Atendemos! 😊 Sáb 8h-13h. Qual serviço você precisa?'},{c:'O básico',a:'Básico R$ 120, mesmo dia ✅ Sábado 9h? 🎉'}],
+        [{c:'Quanto é a visita técnica?',a:'A visita é grátis 🔧 Só fecho o valor depois de avaliar. Quando posso ir?'},{c:'Amanhã',a:'Amanhã 14h ✅'}],
+        [{c:'Fazem orçamento sem compromisso?',a:'Total! 📋 Sem compromisso nenhum. Me conta o que você precisa?'},{c:'Instalação elétrica',a:'Anotado ✅ Agendo a avaliação 🎉'}],
+        [{c:'Atende minha região?',a:'Atendo sim! 🚗 Qual serviço você precisa?'},{c:'Conserto urgente',a:'Urgência hoje mesmo ✅ Já tô a caminho!'}]
       ]}
   };
 
   var st={leads:0,resp:0,nego:0,vendas:0};
   var counts={novo:0,qualificado:0,conversa:0,proposta:0,cliente:0};
   var order=['novo','qualificado','conversa','proposta','cliente'];
-  var active=[];
-  var timer=null, chatTimer=null;
-  var cur='restaurante';
+  var leads={}, queue=[], used={}, seq=0, cur='restaurante', stopped=false, gen=0;
 
   function rng(a){return a[Math.floor(Math.random()*a.length)];}
-  function initials(n){return n.replace(/^(Sr\.|Eng\.)\s*/,'').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
-  function bump(id,val){var e=document.getElementById(id);if(!e)return;e.textContent=val;e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop');}
+  function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+  function initials(n){return n.replace(/^(Sr\.|Eng\.|Dr\.)\s*/,'').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
+  function uniqueName(){
+    var pool=NICHES[cur].nomes, avail=pool.filter(function(n){return !used[n];});
+    var name=avail.length?rng(avail):(rng(pool)+' '+String.fromCharCode(65+Math.floor(Math.random()*26))+'.');
+    used[name]=true; return name;
+  }
+  function bump(id,v){var e=document.getElementById(id);if(!e)return;e.textContent=v;e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop');}
   function refreshStats(){bump('s-leads',st.leads);bump('s-resp',st.resp);bump('s-nego',st.nego);bump('s-vendas',st.vendas);
     order.forEach(function(s){var c=document.getElementById('c-'+s);if(c)c.textContent=counts[s];});}
+  function tagFor(s){return {qualificado:'Qualificado',conversa:'Negociando',proposta:'Proposta enviada',cliente:'✅ Fechou!'}[s]||'';}
 
-  function reset(){
-    if(timer)clearInterval(timer); if(chatTimer)clearTimeout(chatTimer);
-    active=[]; st={leads:0,resp:0,nego:0,vendas:0}; counts={novo:0,qualificado:0,conversa:0,proposta:0,cliente:0};
-    order.forEach(function(s){document.getElementById('col-'+s).innerHTML='';});
-    document.getElementById('chat').innerHTML=''; refreshStats();
-  }
-
-  function tagFor(stage){return {qualificado:'Qualificado',conversa:'Negociando',proposta:'Proposta enviada',cliente:'✅ Fechou!'}[stage]||'';}
-  function makeCard(lead){
-    var d=document.createElement('div'); d.className='card'; d.id='card-'+lead.id;
+  function placeCard(lead,glow){
+    var old=document.getElementById('card-'+lead.id);if(old)old.remove();
+    var d=document.createElement('div');d.className='card'+(lead.stage==='cliente'?' win':'')+(lead.stage!=='novo'?' moved':'')+(glow?' glow':'');
+    d.id='card-'+lead.id;
     d.innerHTML='<div class="nm"><span class="av">'+initials(lead.name)+'</span>'+lead.name+'</div>'+
-      '<div class="msg">'+lead.firstMsg+'</div>'+
-      (lead.stage!=='novo'?'<span class="tag">'+tagFor(lead.stage)+'</span>':'');
-    return d;
+      '<div class="msg">'+lead.firstMsg+'</div>'+(lead.stage!=='novo'?'<span class="tag">'+tagFor(lead.stage)+'</span>':'');
+    document.getElementById('col-'+lead.stage).prepend(d);
   }
-  function placeCard(lead){
-    var old=document.getElementById('card-'+lead.id); if(old)old.remove();
-    var c=makeCard(lead);
-    if(lead.stage==='cliente')c.classList.add('win');
-    if(lead.stage!=='novo')c.classList.add('moved');
-    document.getElementById('col-'+lead.stage).prepend(c);
+  function moveLead(lead,stage,glow){
+    if(lead.stage===stage){placeCard(lead,glow);return;}
+    counts[lead.stage]--; lead.stage=stage; counts[stage]++;
+    if(stage==='qualificado')st.resp++;
+    st.nego=Object.keys(leads).map(function(k){return leads[k];}).filter(function(l){return l.stage==='conversa'||l.stage==='proposta';}).length;
+    if(stage==='cliente')st.vendas++;
+    placeCard(lead,glow); refreshStats();
   }
 
   function spawn(){
-    var nz=NICHES[cur]; var lead={id:Date.now()+''+Math.floor(Math.random()*999),name:rng(nz.nomes),stage:'novo',firstMsg:nz.script[0].c,si:0};
-    active.push(lead); st.leads++; counts.novo++; placeCard(lead); refreshStats();
-  }
-  function advance(){
-    var movable=active.filter(function(l){return l.stage!=='cliente';});
-    if(!movable.length)return;
-    var lead=rng(movable);
-    var i=order.indexOf(lead.stage); counts[lead.stage]--; lead.stage=order[i+1]; counts[lead.stage]++;
-    if(lead.stage==='qualificado')st.resp++;
-    st.nego=active.filter(function(l){return l.stage==='conversa'||l.stage==='proposta';}).length;
-    if(lead.stage==='cliente')st.vendas++;
-    placeCard(lead); refreshStats(); playChat(lead);
-    if(active.length>16){var done=active.filter(function(l){return l.stage==='cliente';});if(done.length>4){var rm=done[0];active=active.filter(function(l){return l!==rm;});var el=document.getElementById('card-'+rm.id);if(el)el.remove();counts.cliente--;refreshStats();}}
+    var convo=rng(NICHES[cur].convos);
+    var lead={id:'L'+(++seq),name:uniqueName(),stage:'novo',convo:convo,firstMsg:convo[0].c};
+    leads[lead.id]=lead; queue.push(lead.id); counts.novo++; st.leads++;
+    placeCard(lead); refreshStats();
   }
 
-  function playChat(lead){
-    var nz=NICHES[cur]; var step=Math.min(lead.si,nz.script.length-1); var pair=nz.script[step]; lead.si++;
-    addBub('in',lead.name,pair.c); showTyping();
-    chatTimer=setTimeout(function(){removeTyping();addBub('out','Aurora',pair.a);},1100+Math.random()*700);
-  }
-  function addBub(dir,who,txt){var chat=document.getElementById('chat');var b=document.createElement('div');b.className='bub '+dir;b.innerHTML='<div class="who">'+who+'</div>'+txt;chat.appendChild(b);trimChat();scrollChat();}
-  function showTyping(){var chat=document.getElementById('chat');var t=document.createElement('div');t.className='typing';t.id='typing';t.innerHTML='<span></span><span></span><span></span>';chat.appendChild(t);scrollChat();}
+  // Chat
+  function setChatPeer(lead){document.getElementById('chat-nm').textContent='Aurora';document.getElementById('chat-st').textContent='falando com '+lead.name;}
+  function clearChat(){document.getElementById('chat').innerHTML='';}
+  function addBub(dir,who,txt){var c=document.getElementById('chat');var b=document.createElement('div');b.className='bub '+dir;b.innerHTML='<div class="who">'+who+'</div>'+txt;c.appendChild(b);c.scrollTop=c.scrollHeight;}
+  function showTyping(){var c=document.getElementById('chat');var t=document.createElement('div');t.className='typing';t.id='typing';t.innerHTML='<span></span><span></span><span></span>';c.appendChild(t);c.scrollTop=c.scrollHeight;}
   function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
-  function trimChat(){var chat=document.getElementById('chat');while(chat.children.length>14)chat.removeChild(chat.firstChild);}
-  function scrollChat(){var chat=document.getElementById('chat');chat.scrollTop=chat.scrollHeight;}
+
+  // Conta UMA história por vez: a conversa do lead rola e o card anda pelos estágios junto.
+  function cleanupClientes(){
+    var done=Object.keys(leads).map(function(k){return leads[k];}).filter(function(l){return l.stage==='cliente';});
+    while(done.length>4){var rm=done.shift();var el=document.getElementById('card-'+rm.id);if(el)el.remove();counts.cliente--;delete leads[rm.id];delete used[rm.name];}
+    refreshStats();
+  }
+  async function playStory(lead,myGen){
+    setChatPeer(lead); clearChat();
+    var mid=['conversa','proposta'];
+    moveLead(lead,'qualificado',true);
+    for(var t=0;t<lead.convo.length;t++){
+      if(stopped||myGen!==gen)return;
+      var turn=lead.convo[t];
+      addBub('in',lead.name,turn.c); await sleep(750); if(myGen!==gen)return;
+      showTyping(); await sleep(950+Math.random()*650); removeTyping();
+      if(myGen!==gen)return;
+      addBub('out','Aurora',turn.a);
+      if(t<lead.convo.length-1){moveLead(lead,mid[Math.min(t,mid.length-1)],true);}
+      await sleep(800);
+    }
+    if(myGen!==gen)return;
+    moveLead(lead,'cliente',true);
+    cleanupClientes();
+  }
+
+  async function loop(myGen){
+    // seed inicial
+    spawn();await sleep(350);spawn();await sleep(350);spawn();
+    while(!stopped&&myGen===gen){
+      if(counts.novo<3&&Math.random()<0.7)spawn();
+      if(!queue.length){await sleep(700);continue;}
+      var id=queue.shift();var lead=leads[id];
+      if(!lead){continue;}
+      await playStory(lead,myGen);
+      await sleep(1300);
+    }
+  }
 
   function start(niche){
+    gen++; var myGen=gen; stopped=false;
     cur=NICHES[niche]?niche:'restaurante';
     document.getElementById('niche').value=cur;
     document.getElementById('introTxt').innerHTML='Simulação do <b>seu funil de '+NICHES[cur].label+'</b> rodando: a Aurora (IA) atende, qualifica e fecha no WhatsApp, e cada lead aparece no Kanban <b>em tempo real</b> — automático, 24h.';
-    reset();
-    spawn(); setTimeout(spawn,400); setTimeout(function(){spawn();advance();},900);
-    timer=setInterval(function(){ (Math.random()<0.45?spawn:advance)(); },2100);
+    // reset
+    leads={};queue=[];used={};seq=0;st={leads:0,resp:0,nego:0,vendas:0};counts={novo:0,qualificado:0,conversa:0,proposta:0,cliente:0};
+    order.forEach(function(s){document.getElementById('col-'+s).innerHTML='';});
+    clearChat(); refreshStats();
+    loop(myGen);
   }
   document.getElementById('niche').addEventListener('change',function(e){start(e.target.value);});
 
