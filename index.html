@@ -660,10 +660,9 @@ footer{border-top:1px solid var(--border);padding:48px 0 40px;position:relative;
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var nome = document.getElementById('dmNome').value.trim();
-    var email = document.getElementById('dmEmail').value.trim();
-    var tel = document.getElementById('dmTel').value.trim();
-    var msg = 'Oi Aurora! Quero testar a demo da Krumora 🚀\n\nNome: ' + nome + '\nE-mail: ' + email + '\nTel: ' + tel;
-    window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    // Abre o SANDBOX ao vivo (Kanban + IA rodando) levando o nome; o CTA de lá
+    // leva pra Aurora no WhatsApp. (E-mail/tel ficam pra captura no chat com a Aurora.)
+    window.open('demo.html?nome=' + encodeURIComponent(nome), '_blank', 'noopener');
     closeModal();
   });
 })();
