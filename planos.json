@@ -1,6 +1,6 @@
 {
   "_instrucoes": "FONTE ÚNICA DE PLANOS. A Aurora (bot) lê deste arquivo em tempo real (cache ~10min) e a landing pode renderizar dele. Edite aqui + git push → atualiza em todo lugar, sem redeploy do bot. preco é texto livre; inclui é lista (até 4 aparecem no pitch); cakto_link opcional (link de checkout pay.cakto.com.br).",
-  "atualizado_em": "2026-06-30",
+  "atualizado_em": "2026-07-01",
   "planos": [
     {
       "id": "demo",
@@ -16,7 +16,7 @@
       "preco": "R$ 197/mês (setup de R$ 497 GRÁTIS por tempo limitado 🔥)",
       "publico": "quem quer a IA vendedora instalada e vendendo no seu WhatsApp",
       "inclui": ["IA vendedora atendendo no seu WhatsApp 24h", "Funil Kanban em tempo real", "Follow-ups automáticos", "Sem fidelidade — cancele quando quiser"],
-      "cakto_link": ""
+      "cakto_link": "https://pay.cakto.com.br/szdpsw4_951351"
     },
     {
       "id": "pronto",
@@ -24,7 +24,7 @@
       "preco": "R$ 5.997 + R$ 197/mês de manutenção (a partir do 4º mês)",
       "publico": "quem não quer mexer em nada — a gente instala e configura tudo",
       "inclui": ["Tudo do Funcionário IA, instalado por nós", "Setup de Meta Ads incluso", "Comprador IA incluído (R$ 497/mês de valor)", "Acompanhamento próximo"],
-      "cakto_link": ""
+      "cakto_link": "https://pay.cakto.com.br/379mxdy_951364"
     },
     {
       "id": "comprador",
@@ -32,7 +32,7 @@
       "preco": "R$ 497/mês (incluído grátis no Pronto)",
       "publico": "quem compra material/insumos e quer economizar — construtoras, restaurantes, comércios",
       "inclui": ["Cota com TODOS os seus fornecedores de uma vez", "Lê as respostas, compara e acha o menor preço", "Economiza milhares por compra"],
-      "cakto_link": ""
+      "cakto_link": "https://pay.cakto.com.br/ibhjw3t_951361"
     }
   ]
 }
